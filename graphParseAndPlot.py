@@ -8,7 +8,8 @@ import fileinput
 import graph
 import matplotlib.pyplot as plt
 import math
-    
+import BellmanFord
+
 def plotEdge( plot_axis, x0, y0, x1, y1, weight, clr):
     d0 = 4 # This is an offset so the edge is not drawn to the middle of vertex
     d1 = 3 # offset for edges (perpendicular to the edge)
@@ -20,7 +21,7 @@ def plotEdge( plot_axis, x0, y0, x1, y1, weight, clr):
         vx = dx/length
         vy = dy/length
         plot_axis.plot([x0+vx*d0+vy*d1,x1-vx*d0+vy*d1],[y0+vy*d0-vx*d1,y1-vy*d0-vx*d1], color=clr) # Draw a line
-        
+
         # Plot arrows
         plot_axis.plot([x1-vx*d2+vy*4+vy*d1,x1-vx*d0+vy*d1],[y1-vy*d2-vx*4-vx*d1,y1-vy*d0-vx*d1], color=clr)
         plot_axis.plot([x1-vx*d2-vy*4+vy*d1,x1-vx*d0+vy*d1],[y1-vy*d2+vx*4-vx*d1,y1-vy*d0-vx*d1], color=clr)
@@ -44,6 +45,8 @@ for line in fileinput.input("graph.txt"):
 
 fig = plt.figure()
 plt_ax  = fig.add_subplot(111)
+bellman = BellmanFord.BellmanFord(mygraph)
+mst_edges = mst_edges = [edge for edge in bellman.edge_to if edge is not None]
 
 # Display vertices
 minX = minY =  1e1000
@@ -68,5 +71,12 @@ for iE in range (0, mygraph.eCount()):
     x1 = mygraph.eV1X(iE)
     y1 = mygraph.eV1Y(iE)
     plotEdge(plt_ax, x0, y0, x1, y1, mygraph.eWght(iE), '0.9')
+
+for iTE in mst_edges:
+    x0 = mygraph.eVX(iTE[0])
+    y0 = mygraph.eVY(iTE[0])
+    x1 = mygraph.eVX(iTE[1])
+    y1 = mygraph.eVY(iTE[1])
+    plt.plot([x0,x1],[y0,y1],'r--')
 
 plt.show()
